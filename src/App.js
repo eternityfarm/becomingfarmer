@@ -1,104 +1,148 @@
-import React from "react";
+import React, { useState } from 'react';
 
 export default function App() {
-  return (
-    <div style={{
-      fontFamily: "Pretendard, sans-serif",
-      backgroundColor: "#f6f8f3",
-      minHeight: "100vh",
-      color: "#333"
-    }}>
-      {/* 헤더 */}
-      <header style={{
-        backgroundColor: "#4CAF50",
-        color: "white",
-        padding: "15px 20px",
-        fontSize: "1.4rem",
-        fontWeight: "bold",
-      }}>
-        🌾 Becoming Farmer
-      </header>
+  const [userType, setUserType] = useState(null);
+  const [sellerInfo, setSellerInfo] = useState(null);
+  const [tradeOption, setTradeOption] = useState(null);
+  const [negoVisible, setNegoVisible] = useState(false);
+  const [negoValue, setNegoValue] = useState(0);
 
-      {/* 메인 */}
-      <main style={{ padding: "30px", textAlign: "center" }}>
-        <h1>당신의 식탁에 직접 기른 작물을 나눠보세요 🥬</h1>
-        <p style={{ marginTop: "10px", color: "#555" }}>
-          집에서 키운 바질, 토마토, 고추 등 이웃과 교환하거나 판매할 수 있는 온라인 파머스마켓입니다.
-        </p>
-
-        <div style={{
-          marginTop: "40px",
-          display: "flex",
-          justifyContent: "center",
-          gap: "20px",
-          flexWrap: "wrap"
-        }}>
-          <div style={{
-            background: "white",
-            borderRadius: "12px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            width: "250px",
-            padding: "20px"
-          }}>
-            <img
-              src="https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=400&q=60"
-              alt="basil"
-              style={{ width: "100%", borderRadius: "8px" }}
-            />
-            <h3>실내재배 바질 20g</h3>
-            <p style={{ color: "#777" }}>서울 성동구 · 교환가능</p>
-            <button style={{
-              marginTop: "10px",
-              backgroundColor: "#4CAF50",
-              color: "white",
-              border: "none",
-              padding: "10px 15px",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}>
-              교환요청
-            </button>
-          </div>
-
-          <div style={{
-            background: "white",
-            borderRadius: "12px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            width: "250px",
-            padding: "20px"
-          }}>
-            <img
-              src="https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=400&q=60"
-              alt="tomato"
-              style={{ width: "100%", borderRadius: "8px" }}
-            />
-            <h3>방울토마토 10개</h3>
-            <p style={{ color: "#777" }}>경기 수원시 · 판매가 5,000원</p>
-            <button style={{
-              marginTop: "10px",
-              backgroundColor: "#f57c00",
-              color: "white",
-              border: "none",
-              padding: "10px 15px",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}>
-              구매하기
-            </button>
-          </div>
+  // 1️⃣ 인증 단계
+  if (!userType) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-green-50 font-sans">
+        <h1 className="text-3xl font-bold mb-6">🌾 Becoming Farmer</h1>
+        <p className="text-gray-600 mb-4">회원 유형을 선택하세요.</p>
+        <div className="flex gap-4">
+          <button
+            onClick={() => setUserType('home')}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg shadow"
+          >
+            🏡 식물재배기 사용자 인증
+          </button>
+          <button
+            onClick={() => setUserType('pro')}
+            className="px-4 py-2 bg-yellow-500 text-white rounded-lg shadow"
+          >
+            👨‍🌾 전문 농부 인증
+          </button>
         </div>
-      </main>
+        <p className="mt-4 text-sm text-gray-500">※ 인증된 사용자만 판매자로 등록할 수 있습니다.</p>
+      </div>
+    );
+  }
 
-      {/* 푸터 */}
-      <footer style={{
-        backgroundColor: "#eee",
-        padding: "20px",
-        textAlign: "center",
-        fontSize: "0.9rem",
-        color: "#777"
-      }}>
-        © 2025 Becoming Farmer — 당신의 손으로 만든 작물, 세상과 나누세요 🌱
-      </footer>
-    </div>
-  );
+  // 2️⃣ 셀러 등록 단계
+  if (!sellerInfo) {
+    return (
+      <div className="min-h-screen bg-white p-6 font-sans">
+        <h2 className="text-2xl font-bold mb-4">
+          ✅ 셀러 등록 ({userType === 'home' ? '식물재배기 인증' : '전문 농부'})
+        </h2>
+        <p className="text-gray-600 mb-4">재배 과정을 사진, 영상, 설명으로 기록해주세요.</p>
+
+        <input id="cropName" placeholder="작물명 (예: 바질)" className="border p-2 w-full mb-2 rounded" />
+        <input id="location" placeholder="지역 (예: 서울 성동구)" className="border p-2 w-full mb-2 rounded" />
+        <textarea id="desc" placeholder="재배 과정 설명" className="border p-2 w-full mb-2 rounded"></textarea>
+        <input type="file" accept="image/*,video/*" multiple className="border p-2 w-full mb-4 rounded" />
+
+        <button
+          onClick={() =>
+            setSellerInfo({
+              cropName: document.getElementById('cropName').value,
+              location: document.getElementById('location').value,
+              desc: document.getElementById('desc').value,
+            })
+          }
+          className="px-4 py-2 bg-green-600 text-white rounded"
+        >
+          등록하기
+        </button>
+      </div>
+    );
+  }
+
+  // 3️⃣ 거래 방식 선택
+  if (!tradeOption) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6 font-sans">
+        <h2 className="text-2xl font-bold mb-2">🌿 {sellerInfo.cropName}</h2>
+        <p className="text-gray-600 mb-4">판매자: {userType === 'home' ? '식물재배기 사용자' : '전문 농부'}</p>
+
+        <div className="flex gap-4">
+          <button
+            onClick={() => setTradeOption('exchange')}
+            className="px-4 py-2 bg-green-400 text-white rounded shadow"
+          >
+            교환 등록
+          </button>
+          <button
+            onClick={() => setTradeOption('sell')}
+            className="px-4 py-2 bg-orange-400 text-white rounded shadow"
+          >
+            판매 등록
+          </button>
+        </div>
+
+        <div className="mt-6">
+          <h3 className="font-semibold">📸 재배 과정</h3>
+          <p className="text-gray-700 whitespace-pre-wrap">{sellerInfo.desc}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 4️⃣ 교환 또는 판매 상세 폼
+  if (tradeOption === 'exchange') {
+    return (
+      <div className="min-h-screen bg-white p-6 font-sans">
+        <h2 className="text-2xl font-bold mb-4">🤝 교환 등록</h2>
+        <input id="exchangeCrop" placeholder="교환 희망 작물 (예: 상추)" className="border p-2 w-full mb-2 rounded" />
+        <input id="exchangeAmount" placeholder="교환 희망 수량 (예: 200g)" className="border p-2 w-full mb-2 rounded" />
+        <button
+          onClick={() => alert('교환 등록이 완료되었습니다!')}
+          className="px-4 py-2 bg-green-600 text-white rounded"
+        >
+          교환 등록 완료
+        </button>
+      </div>
+    );
+  }
+
+  if (tradeOption === 'sell') {
+    return (
+      <div className="min-h-screen bg-white p-6 font-sans">
+        <h2 className="text-2xl font-bold mb-4">💰 판매 등록</h2>
+        <input id="price" placeholder="판매 희망가 (원 단위)" className="border p-2 w-full mb-2 rounded" />
+        <label className="flex items-center gap-2 mb-4">
+          <input type="checkbox" onChange={(e) => setNegoVisible(e.target.checked)} /> 네고 허용
+        </label>
+
+        {negoVisible && (
+          <div className="mb-4">
+            <label>구매자 제안가 입력 테스트: </label>
+            <input
+              type="number"
+              placeholder="구매자 제안가"
+              onChange={(e) => setNegoValue(e.target.value)}
+              className="border p-2 w-full rounded"
+            />
+            <button
+              onClick={() => alert(`판매자와 ${negoValue}원으로 협상되었습니다.`)}
+              className="mt-2 px-4 py-2 bg-orange-400 text-white rounded"
+            >
+              네고 시뮬레이션
+            </button>
+          </div>
+        )}
+
+        <button
+          onClick={() => alert('판매 등록이 완료되었습니다!')}
+          className="px-4 py-2 bg-green-600 text-white rounded"
+        >
+          판매 등록 완료
+        </button>
+      </div>
+    );
+  }
 }
